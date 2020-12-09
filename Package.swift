@@ -23,7 +23,7 @@ let package = Package(
                 .product(name: "AnyCodable", package: "AnyCodable")
             ]),
         .target(
-            name: "registry",
+            name: "swift-registry",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "AnyCodable", package: "AnyCodable"),
