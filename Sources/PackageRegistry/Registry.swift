@@ -1,4 +1,4 @@
-@testable import Git
+import Git
 import Foundation
 import ZIPFoundation
 import AnyCodable
