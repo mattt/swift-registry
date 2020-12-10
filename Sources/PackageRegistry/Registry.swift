@@ -83,32 +83,32 @@ public final class Registry {
         try commit.addNote(message)
     }
 
-    public func manifest(for release: Release, swiftVersion: String? = nil) -> String? {
+    public func manifest(for release: Release, swiftVersion: String? = nil, completion: (Result<String, Swift.Error>) -> Void) {
         let url = URL(fileURLWithPath: release.archivePath, relativeTo: repository.workingDirectory)
-        guard let archive = Archive(url: url, accessMode: .read) else { return nil }
 
-
-        let fileName: String
-        if let swiftVersion = swiftVersion {
-            fileName = "Package@swift-\(swiftVersion).swift"
-        } else {
-            fileName = "Package.swift"
-        }
-
-        guard Package.isValidManifestFile(fileName),
-              let entry = archive[fileName]
-        else { return nil }
-
-        var manifest: String?
         do {
+            guard let archive = Archive(url: url, accessMode: .read) else { throw Error.archiveNotFound }
+
+            let fileName: String
+            if let swiftVersion = swiftVersion {
+                fileName = "Package@swift-\(swiftVersion).swift"
+            } else {
+                fileName = "Package.swift"
+            }
+
+            guard Package.isValidManifestFile(fileName),
+                  let entry = archive[fileName]
+            else { throw Error.invalidManifest }
+
             _ = try archive.extract(entry, consumer: { (data) in
-                manifest = String(data: data, encoding: .utf8)
+                guard let manifest = String(data: data, encoding: .utf8),
+                      !manifest.isEmpty
+                else { throw Error.invalidManifest }
+                completion(.success(manifest))
             })
         } catch {
-            return nil
+            completion(.failure(error))
         }
-
-        return manifest
     }
 
     @discardableResult

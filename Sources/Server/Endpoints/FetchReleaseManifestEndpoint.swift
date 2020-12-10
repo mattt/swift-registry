@@ -8,12 +8,17 @@ struct FetchReleaseManifestEndpoint: Responder {
     var swiftVersion: String?
 
     func respond(to request: Request) -> EventLoopFuture<Response> {
-        request.eventLoop.tryFuture {
-            guard try registry.releases(for: release.package).contains(release) else { throw Abort(.notFound) }
-            guard let manifest = registry.manifest(for: release, swiftVersion: swiftVersion) else {
-                throw Abort(.seeOther, headers: ["Location": "/\(release.package)/\(release.version)/Package.swift"])
-            }
+        guard (try? registry.releases(for: release.package).contains(release)) == true else {
+            return request.eventLoop.makeFailedFuture(Abort(.notFound))
+        }
 
+        let promise = request.eventLoop.makePromise(of: String.self)
+
+        registry.manifest(for: release, swiftVersion: swiftVersion) { result in
+            promise.completeWith(result)
+        }
+
+        return promise.futureResult.flatMapThrowing { manifest in
             var headers: HTTPHeaders = [:]
             headers.contentType = .swift
             if let swiftVersion = swiftVersion {
