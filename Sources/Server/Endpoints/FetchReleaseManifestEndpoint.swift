@@ -12,22 +12,38 @@ struct FetchReleaseManifestEndpoint: Responder {
             return request.eventLoop.makeFailedFuture(Abort(.notFound))
         }
 
-        let promise = request.eventLoop.makePromise(of: String.self)
+        let promise = request.eventLoop.makePromise(of: Response.self)
 
         registry.manifest(for: release, swiftVersion: swiftVersion) { result in
-            promise.completeWith(result)
-        }
+            switch result {
+            case .success(let manifest):
+                var headers: HTTPHeaders = [:]
+                headers.contentType = .swift
+                if let swiftVersion = swiftVersion {
+                    headers.contentDisposition = .init(.attachment, filename: "Package@swift-\(swiftVersion).swift")
+                } else {
+                    headers.contentDisposition = .init(.attachment, filename: "Package.swift")
+                }
 
-        return promise.futureResult.flatMapThrowing { manifest in
-            var headers: HTTPHeaders = [:]
-            headers.contentType = .swift
-            if let swiftVersion = swiftVersion {
-                headers.contentDisposition = .init(.attachment, filename: "Package@swift-\(swiftVersion).swift")
-            } else {
-                headers.contentDisposition = .init(.attachment, filename: "Package.swift")
+                let response = Response(status: .ok, version: request.version, headers: headers, body: .init(string: manifest))
+
+                promise.succeed(response)
+            case .failure(_ as PackageRegistry.Error) where swiftVersion != nil:
+                var components = request.url.path.split(separator: "/")
+                components.removeLast()
+                components.append("Package.swift")
+                let location = components.joined(separator: "/")
+
+                var headers: HTTPHeaders = [:]
+                headers.add(name: .location, value: location)
+                let response = Response(status: .seeOther, version: request.version, headers: headers, body: .empty)
+
+                promise.succeed(response)
+            case .failure(let error):
+                promise.fail(error)
             }
-
-            return Response(status: .ok, version: request.version, headers: headers, body: .init(string: manifest))
         }
+
+        return promise.futureResult
     }
 }
