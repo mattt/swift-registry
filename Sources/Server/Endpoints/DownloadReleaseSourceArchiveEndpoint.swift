@@ -12,9 +12,11 @@ struct DownloadReleaseSourceArchiveEndpoint: Responder {
                   let archive = registry.archive(of: release)
             else { throw Abort(.notFound) }
 
-            let response = request.fileio.streamFile(at: archive.path)
+            let archiveURL = registry.indexURL.appendingPathComponent(archive.path)
+
+            let response = request.fileio.streamFile(at: archiveURL.path)
             response.headers.contentType = .zip
-            response.headers.contentDisposition = .init(.attachment, filename: "\(release.package.name)-\(release.version).zip")
+            response.headers.contentDisposition = .init(.attachment, filename: "\(release.package.name)-\(release.version)")
             response.headers.add(name: .digest, value: "sha-256=\(archive.checksum)")
 
             return response

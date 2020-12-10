@@ -6,11 +6,19 @@ import AnyCodable
 public final class Registry {
     public typealias Archiver = (Release) throws -> Data
 
-    public let repository: Repository
+    let repository: Repository
+
+    public let indexURL: URL
+
     public var archiver: Archiver = Git.archive
 
-    init(repository: Repository) {
+    init(repository: Repository) throws {
+        guard let indexURL = repository.workingDirectory else {
+            throw Error.invalidURL
+        }
+
         self.repository = repository
+        self.indexURL = indexURL
     }
 
     @discardableResult
@@ -42,7 +50,7 @@ public final class Registry {
         try shell(Git.tool, with: ["commit",
                                    "-m", "Initialize registry"])
 
-        return Registry(repository: repository)
+        return try Registry(repository: repository)
     }
 
     public class func open(at url: URL) throws -> Registry {
@@ -50,7 +58,7 @@ public final class Registry {
 
         let repository = try Repository.open(at: url)
 
-        return Registry(repository: repository)
+        return try Registry(repository: repository)
     }
 
     public func packages() throws -> [Package] {
