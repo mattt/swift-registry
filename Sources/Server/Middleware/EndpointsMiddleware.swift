@@ -16,6 +16,12 @@ struct EndpointsMiddleware: Middleware {
 
         let endpoint: Responder
         switch (request.method, package, version) {
+        case (.HEAD, _?, nil):
+            var headers: HTTPHeaders = [:]
+            headers.add(name: .location, value: request.url.description)
+            let redirection = Response(status: .seeOther, version: request.version, headers: headers, body: .empty)
+
+            return request.eventLoop.makeSucceededFuture(redirection)
         case let (.GET, package?, nil):
             endpoint = ListReleasesEndpoint(registry: registry, package: package)
         case let (.GET, package?, version?):
