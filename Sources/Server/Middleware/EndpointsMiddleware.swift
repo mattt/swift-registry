@@ -6,6 +6,8 @@ struct EndpointsMiddleware: Middleware {
     public let registry: Registry
 
     public func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+        request.logger.trace("\(request.method) \(request.url)")
+
         var components = request.url.path.split(separator: "/", omittingEmptySubsequences: true)
 
         let manifest = components.popLast(if: "Package.swift") != nil
