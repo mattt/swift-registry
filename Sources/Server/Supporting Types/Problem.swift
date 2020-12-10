@@ -27,6 +27,18 @@ struct Problem: Error {
     }
 }
 
+// MARK: - DebuggableError
+
+extension Problem: DebuggableError {
+    var identifier: String {
+        [type, title, instance].compactMap { $0 }.joined(separator: " - ")
+    }
+
+    var reason: String {
+        detail ?? title ?? "Unknown"
+    }
+}
+
 // MARK: - ResponseEncodable
 
 extension Problem: ResponseEncodable {
@@ -42,7 +54,7 @@ extension Problem: ResponseEncodable {
         body["type"] = type
         body["title"] = title ?? HTTPURLResponse.localizedString(forStatusCode: numericCast(status.code))
         body["detail"] = detail
-        body["instance"] = instance ?? request.logger[metadataKey: "request-id"]?.description
+        body["instance"] = instance
 
         return body.encodeResponse(status: status, headers: headers, for: request)
     }
