@@ -12,6 +12,7 @@ let package = Package(
         .package(url: "https://github.com/SwiftDocOrg/Git.git", .revision("f3b37c3ccf0a1559d4097e2eeb883801c4b8f510")),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", .upToNextMinor(from: "0.9.0")),
         .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMinor(from: "0.3.1")),
+        .package(url: "https://github.com/apple/swift-log.git", .upToNextMinor(from: "1.4.0")),
         .package(url: "https://github.com/Flight-School/AnyCodable.git", .upToNextMinor(from: "0.3.0"))
     ],
     targets: [
@@ -27,6 +28,7 @@ let package = Package(
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "AnyCodable", package: "AnyCodable"),
+                .product(name: "Logging", package: "swift-log"),
                 .target(name: "PackageRegistry"),
                 .target(name: "Server")
             ],

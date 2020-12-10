@@ -1,8 +1,8 @@
-//
-//  File.swift
-//  
-//
-//  Created by Mattt Zmuda on 12/10/20.
-//
+import Logging
+import ArgumentParser
 
-import Foundation
+extension Logger.Level: ExpressibleByArgument {
+    public init?(argument: String) {
+        self.init(rawValue: argument)
+    }
+}
