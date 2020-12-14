@@ -74,10 +74,6 @@ open class EndpointTestCase: XCTestCase {
     open override func tearDownWithError() throws {
         app.shutdown()
 
-        if let registry = registry {
-            try FileManager.default.removeItem(at: registry.indexURL)
-        }
-
         try super.tearDownWithError()
     }
 }
