@@ -8,7 +8,8 @@ open class EndpointTestCase: XCTestCase {
     var registry: Registry!
 
     open override func setUpWithError() throws {
-        registry = try Registry.create(at: temporaryURL())
+        let url = try temporaryDirectory().appendingPathComponent(".index", isDirectory: true)
+        registry = try Registry.create(at: url)
         registry.archiver = { release in
             let archive = Archive(accessMode: .create)!
 
@@ -66,6 +67,10 @@ open class EndpointTestCase: XCTestCase {
 
     open override func tearDownWithError() throws {
         app.shutdown()
+
+        if let registry = registry {
+            try FileManager.default.removeItem(at: registry.indexURL)
+        }
 
         try super.tearDownWithError()
     }

@@ -5,9 +5,7 @@ import AnyCodable
 
 final class RegistryTests: XCTestCase {
     func testCreateAndPublish() throws {
-        let url = temporaryURL()
-        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-
+        let url = try temporaryDirectory().appendingPathComponent(".index")
         let registry = try Registry.create(at: url)
 
         let release = try registry.publish(version: "0.0.2", of: "github.com/SwiftDocOrg/Markup")
