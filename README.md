@@ -1,5 +1,7 @@
 # Swift Package Registry - Reference Implementation
 
+![CI][ci badge]
+
 This is a reference implementation for a package registry service,
 as described in [this proposal](https://github.com/apple/swift-evolution/pull/1179).
 
@@ -66,3 +68,5 @@ $ swift run registry list --index path/to/index
 github.com/Flight-School/Money - 1.2.0
 github.com/Jounce/Surge - 2.3.0
 ```
+
+[ci badge]: https://github.com/mattt/swift-registry/workflows/CI/badge.svg
