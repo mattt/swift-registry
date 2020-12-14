@@ -1,5 +1,9 @@
 import Vapor
+
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 struct Problem: Error {
     var type: String?
