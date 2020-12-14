@@ -9,7 +9,13 @@ open class EndpointTestCase: XCTestCase {
 
     open override func setUpWithError() throws {
         let url = try temporaryDirectory().appendingPathComponent(".index", isDirectory: true)
-        registry = try Registry.create(at: url)
+
+        let configuration: [String: String] = [
+            "user.name": "Swift Package Registry",
+            "user.email": "noreply@swift.org"
+        ]
+        let registry = try Registry.create(at: url, with: configuration)
+
         registry.archiver = { release in
             let archive = Archive(accessMode: .create)!
 
@@ -60,7 +66,7 @@ open class EndpointTestCase: XCTestCase {
         try registry.publish(version: "1.1.0", of: "github.com/mona/LinkedList")
         try registry.publish(version: "1.1.1", of: "github.com/mona/LinkedList")
 
-        try configure(app, with: registry!)
+        try configure(app, with: registry)
 
         try super.setUpWithError()
     }
