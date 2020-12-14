@@ -5,7 +5,7 @@ import AnyCodable
 
 final class RegistryTests: XCTestCase {
     func testCreateAndPublish() throws {
-        let url = try temporaryDirectory().appendingPathComponent(".index")
+        let url = try temporaryDirectory()
         
         let configuration: [String: String] = [
             "user.name": "Swift Package Registry",

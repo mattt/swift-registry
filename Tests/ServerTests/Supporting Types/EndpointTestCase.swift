@@ -8,7 +8,7 @@ open class EndpointTestCase: XCTestCase {
     var registry: Registry!
 
     open override func setUpWithError() throws {
-        let url = try temporaryDirectory().appendingPathComponent(".index", isDirectory: true)
+        let url = try temporaryDirectory()
 
         let configuration: [String: String] = [
             "user.name": "Swift Package Registry",
