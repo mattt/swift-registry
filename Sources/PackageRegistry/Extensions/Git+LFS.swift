@@ -55,14 +55,6 @@ extension Git {
     public typealias LFS = LargeFileStorage
 }
 
-//extension Tree.Entry {
-//    public var externalFile: LFS.File? {
-//        guard let blob = object as? Blob else { return nil }
-//
-//        return LFS.File(name: name,  blob: blob)
-//    }
-//}
-
 extension Repository.Index.Entry {
     public var externalFile: Git.LFS.File? {
         if let blob = blob {
@@ -85,18 +77,18 @@ fileprivate extension InputStream {
         let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
 
         var hasher = SHA256()
-        while hasBytesAvailable {
-            let count = read(buffer, maxLength: bufferSize)
-            let bufferPointer = UnsafeRawBufferPointer(start: buffer, count: count)
+        accumulator: while hasBytesAvailable {
+            let bytesRead = read(buffer, maxLength: bufferSize)
+            guard bytesRead > 0 else { break accumulator }
+            let bufferPointer = UnsafeRawBufferPointer(start: buffer, count: bytesRead)
             hasher.update(bufferPointer: bufferPointer)
         }
         let digest = hasher.finalize()
-
-        return digest.map { String(format: "%02hhx", $0) }.joined()
+        return digest.hexadecimalRepresentation
     }
     #else
     var sha256Checksum: String {
-        return Data(reading: self).sha256().map { String(format: "%02hhx", $0) }.joined()
+        return Data(reading: self).sha256().hexadecimalRepresentation
     }
     #endif
 }
@@ -117,5 +109,11 @@ fileprivate extension Data {
             append(buffer, count: bytesRead)
         }
         buffer.deallocate()
+    }
+}
+
+fileprivate extension Sequence where Element == UInt8 {
+    var hexadecimalRepresentation: String {
+        map { String(format: "%02hhx", $0) }.joined()
     }
 }
