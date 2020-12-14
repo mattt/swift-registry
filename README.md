@@ -8,7 +8,7 @@ as described in [this proposal](https://github.com/apple/swift-evolution/pull/11
 ## Requirements
 
 - macOS 10.14+
-- Swift 5.2+ (_install the latest version of Xcode_)
+- Swift 5.3+ (_install the latest version of Xcode_)
 - [Homebrew](https://brew.sh)
 - Docker* (_optional_)
 

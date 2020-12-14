@@ -1,6 +1,10 @@
 import Git
 import Foundation
+#if canImport(CryptoKit)
 import CryptoKit
+#else
+import CryptoSwift
+#endif
 
 extension Git {
     public enum LargeFileStorage {
@@ -72,6 +76,7 @@ extension Repository.Index.Entry {
 }
 
 fileprivate extension InputStream {
+    #if canImport(CryptoKit)
     var sha256Checksum: String {
         open()
         defer { close() }
@@ -88,5 +93,29 @@ fileprivate extension InputStream {
         let digest = hasher.finalize()
 
         return digest.map { String(format: "%02hhx", $0) }.joined()
+    }
+    #else
+    var sha256Checksum: String {
+        return Data(reading: self).sha256().map { String(format: "%02hhx", $0) }.joined()
+    }
+    #endif
+}
+
+fileprivate extension Data {
+    init(reading input: InputStream) {
+        self.init()
+
+        input.open()
+        defer { input.close() }
+
+        let bufferSize = 4096
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+
+        accumulator: while input.hasBytesAvailable {
+            let bytesRead = input.read(buffer, maxLength: bufferSize)
+            guard bytesRead > 0 else { break accumulator }
+            append(buffer, count: bytesRead)
+        }
+        buffer.deallocate()
     }
 }
