@@ -11,12 +11,12 @@ final class PublishReleaseEndpointTests: EndpointTestCase {
          to publish a release of a package.
 
          ```http
-         PUT /github.com/mona/LinkedList/1.1.1 HTTP/1.1
+         PUT /@mona/LinkedList/1.1.1 HTTP/1.1
          Host: packages.example.com
          Accept: application/vnd.swift.registry.v1
          ```
          */
-        try app.test(.PUT, "github.com/mona/LinkedList/2.0.0",
+        try app.test(.PUT, "@mona/LinkedList/2.0.0",
                      headers: ["Accept": "application/vnd.swift.registry.v1+zip"],
                      afterResponse: { response in
                         /*

@@ -12,12 +12,12 @@ final class FetchReleaseManifestEndpointTests: EndpointTestCase {
          `application/vnd.swift.registry.v1+swift`.
 
          ```http
-         GET /github.com/mona/LinkedList/1.1.1/Package.swift HTTP/1.1
+         GET /@mona/LinkedList/1.1.1/Package.swift HTTP/1.1
          Host: packages.example.com
          Accept: application/vnd.swift.registry.v1+swift
          ```
          */
-        try app.test(.GET, "github.com/mona/LinkedList/1.1.1/Package.swift",
+        try app.test(.GET, "@mona/LinkedList/1.1.1/Package.swift",
                      headers: ["Accept": "application/vnd.swift.registry.v1+swift"],
                      afterResponse: { response in
                         /*
@@ -56,7 +56,7 @@ final class FetchReleaseManifestEndpointTests: EndpointTestCase {
          If no release is found for the requested URI,
          a server SHOULD respond with a status code of `404` (NOT FOUND).
          */
-        try app.test(.GET, "github.com/mona/LinkedList/0.0.0/Package.swift",
+        try app.test(.GET, "@mona/LinkedList/0.0.0/Package.swift",
                      headers: ["Accept": "application/vnd.swift.registry.v1+swift"],
                      afterResponse: { response in
                         XCTAssertEqual(response.status, .notFound)
@@ -70,7 +70,7 @@ final class FetchReleaseManifestEndpointTests: EndpointTestCase {
          to request a manifest for a particular version of Swift.
 
          ```http
-         GET /github.com/mona/LinkedList/1.1.1/Package.swift?swift-version=4.2 HTTP/1.1
+         GET /@mona/LinkedList/1.1.1/Package.swift?swift-version=4.2 HTTP/1.1
          Host: packages.example.com
          Accept: application/vnd.swift.registry.v1+swift
          ```
@@ -105,7 +105,7 @@ final class FetchReleaseManifestEndpointTests: EndpointTestCase {
          )
          ```
          */
-        try app.test(.GET, "github.com/mona/LinkedList/1.1.1/Package.swift?swift-version=4.2",
+        try app.test(.GET, "@mona/LinkedList/1.1.1/Package.swift?swift-version=4.2",
                      headers: ["Accept": "application/vnd.swift.registry.v1+swift"],
                      afterResponse: { response in
                         /*
@@ -148,10 +148,10 @@ final class FetchReleaseManifestEndpointTests: EndpointTestCase {
          ```http
          HTTP/1.1 303 See Other
          Content-Version: 1
-         Location: https://packages.example.com/github.com/mona/LinkedList/1.1.1/Package.swift
+         Location: https://packages.example.com/@mona/LinkedList/1.1.1/Package.swift
          ```
          */
-        try app.test(.GET, "github.com/mona/LinkedList/1.1.1/Package.swift?swift-version=3.0",
+        try app.test(.GET, "@mona/LinkedList/1.1.1/Package.swift?swift-version=3.0",
                      headers: ["Accept": "application/vnd.swift.registry.v1+swift"],
                      afterResponse: { response in
                         XCTAssertEqual(response.status, .seeOther)

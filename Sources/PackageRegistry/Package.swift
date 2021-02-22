@@ -1,23 +1,45 @@
 import Foundation
 
 public struct Package {
-    public let url: URL
+    public let scope: String
     public let name: String
 
-    public init?(_ identifier: String) {
-        guard let identifier = identifier.trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty?.prefixed(by: "https://"),
-              let url = URL(string: identifier), url.host != nil
-        else { return nil }
+    public init?(_ description: String) {
+        guard !description.isEmpty,
+              let separatorIndex = description.firstIndex(of: "/"),
+              separatorIndex != description.endIndex
+        else {
+            return nil
+        }
 
-        self.init(url)
-    }
+        do {
+            let scope = description.prefix(upTo: separatorIndex)
+            guard scope.count <= 40,
+                  case let (initial, rest)? = scope.headAndTail,
+                  initial == "@",
+                  case let (head, tail)? = rest.headAndTail,
+                  head.isAlphanumeric,
+                  tail.allSatisfy({ $0.isAlphanumeric || $0 == "-" }),
+                  head != "-", tail.last != "-",
+                  !scope.containsContiguousHyphens
+            else {
+                return nil
+            }
+            self.scope = String(scope)
+        }
 
-    public init?(_ url: URL) {
-        guard url.scheme == "https" else { return nil }
-        guard let name = url.lastPathComponent.nonEmpty ?? url.host else { return nil }
-
-        self.url = url
-        self.name = name
+        do {
+            let name = description.suffix(from: description.index(after: separatorIndex))
+            let unicodeScalars = name.unicodeScalars
+            guard name.count <= 128,
+                  case let (head, tail)? = unicodeScalars.headAndTail,
+                  head.properties.isXIDStart,
+                  tail.allSatisfy({ $0.properties.isXIDContinue })
+            else {
+                return nil
+            }
+            self.name = String(name)
+        }
     }
 
     init?(tagName: String) {
@@ -27,14 +49,9 @@ public struct Package {
         self.init(components.joined(separator: "/"))
     }
 
-    private init(_ package: Package) {
-        self.url = package.url
+    private init(package: Package) {
+        self.scope = package.scope
         self.name = package.name
-    }
-
-    static func isValidManifestFile(_ fileName: String) -> Bool {
-        let pattern = #"\APackage(@swift-(\d+)(?:\.(\d+)){0,2})?.swift\z"#
-        return fileName.range(of: pattern, options: .regularExpression) != nil
     }
 
     var directoryPath: String {
@@ -49,23 +66,32 @@ public struct Package {
     }
 }
 
+extension Package {
+    public static func isValidManifestFile(_ fileName: String) -> Bool {
+        let pattern = #"\APackage(@swift-(\d+)(?:\.(\d+)){0,2})?.swift\z"#
+        return fileName.range(of: pattern, options: .regularExpression) != nil
+    }
+}
+
 // MARK: - Equatable & Comparable
 
 extension Package: Equatable, Comparable {
-    private func compare(to other: Package) -> ComparisonResult {
-        url.absoluteString.precomposedStringWithCanonicalMapping.caseInsensitiveCompare(other.url.absoluteString.precomposedStringWithCanonicalMapping)
+    private static func compare(_ lhs: Package, _ rhs: Package) -> ComparisonResult {
+        let lhs = lhs.description.precomposedStringWithCompatibilityMapping
+        let rhs = rhs.description.precomposedStringWithCompatibilityMapping
+        return lhs.compare(rhs, options: [.caseInsensitive, .diacriticInsensitive])
     }
 
     public static func == (lhs: Package, rhs: Package) -> Bool {
-        lhs.compare(to: rhs) == .orderedSame
+        compare(lhs, rhs) == .orderedSame
     }
 
     public static func < (lhs: Package, rhs: Package) -> Bool {
-        lhs.compare(to: rhs) == .orderedAscending
+        compare(lhs, rhs) == .orderedAscending
     }
 
     public static func > (lhs: Package, rhs: Package) -> Bool {
-        lhs.compare(to: rhs) == .orderedDescending
+        compare(lhs, rhs) == .orderedDescending
     }
 }
 
@@ -73,7 +99,8 @@ extension Package: Equatable, Comparable {
 
 extension Package: Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(url)
+        hasher.combine(scope.lowercased())
+        hasher.combine(name.lowercased().precomposedStringWithCompatibilityMapping)
     }
 }
 
@@ -81,7 +108,7 @@ extension Package: Hashable {
 
 extension Package: CustomStringConvertible {
     public var description: String {
-        [url.host, url.path].compactMap { $0 }.joined()
+        "\(scope)/\(name)"
     }
 }
 
@@ -89,20 +116,13 @@ extension Package: CustomStringConvertible {
 
 extension Package: LosslessStringConvertible {}
 
-// MARK: - ExpressibleByStringLiteral
-
-extension Package: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self.init(value)!
-    }
-}
-
 // MARK: - Encodable
 
 extension Package: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        try container.encode(url)
+        let identifier = self.description
+        try container.encode(identifier)
     }
 }
 
@@ -111,23 +131,41 @@ extension Package: Encodable {
 extension Package: Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        let url = try container.decode(URL.self)
-        guard let package = Package(url) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "invalid url")
+        let identifier = try container.decode(String.self)
+        guard let package = Package(identifier) else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "invalid identifier")
         }
 
-        self.init(package)
+        self.init(package: package)
     }
 }
 
 // MARK: -
 
-fileprivate extension StringProtocol {
-    func prefixed(by prefix: String) -> String {
-        return starts(with: prefix) ? String(self) : prefix + self
-    }
 
-    var nonEmpty: Self? {
-        self.isEmpty ? nil : self
+fileprivate extension Collection {
+    var headAndTail: (head: Element, tail: SubSequence)? {
+        guard let head = first else { return nil }
+        return (head, dropFirst())
+    }
+}
+
+fileprivate extension StringProtocol {
+    var containsContiguousHyphens: Bool {
+        guard var previous = first else { return false }
+        for character in suffix(from: startIndex) {
+            defer { previous = character }
+            if character == "-" && previous == "-" {
+                return true
+            }
+        }
+
+        return false
+    }
+}
+
+fileprivate extension Character {
+    var isAlphanumeric: Bool {
+        isASCII && (isLetter || isNumber)
     }
 }

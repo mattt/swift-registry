@@ -13,12 +13,12 @@ final class FetchReleaseMetadataEndpointTests: EndpointTestCase {
          and MAY append the `.json` extension to the requested URI.
 
          ```http
-         GET /github.com/mona/LinkedList/1.1.1 HTTP/1.1
+         GET /@mona/LinkedList/1.1.1 HTTP/1.1
          Host: packages.example.com
          Accept: application/vnd.swift.registry.v1+json
          ```
          */
-        try app.test(.GET, "github.com/mona/LinkedList/1.1.1",
+        try app.test(.GET, "@mona/LinkedList/1.1.1",
                      headers: ["Accept": "application/vnd.swift.registry.v1+json"],
                      afterResponse: { response in
                         /*
@@ -42,7 +42,7 @@ final class FetchReleaseMetadataEndpointTests: EndpointTestCase {
         If no release is found for the requested URI,
         a server SHOULD respond with a status code of `404` (NOT FOUND).
         */
-        try app.test(.GET, "github.com/mona/LinkedList/0.0.0",
+        try app.test(.GET, "@mona/LinkedList/0.0.0",
                      headers: ["Accept": "application/vnd.swift.registry.v1+json"],
                      afterResponse: { response in
                         XCTAssertEqual(response.status, .notFound)
