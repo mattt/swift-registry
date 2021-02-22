@@ -37,9 +37,8 @@ will be created at the specified path if one doesn't already exist there.
 You can interact with the registry using `curl` or your REST client of choice.
 
 ```terminal
-$ curl -X PUT \
-    -H "Accept: application/vnd.swift.registry.v1+json" \
-    "http://localhost:8080/@Alamofire/Alamofire/5.0.0"
+$ curl -H "Accept: application/vnd.swift.registry.v1+json" \
+       "http://localhost:8080/@Alamofire/Alamofire"
 ```
 
 ### Command Line Interface
