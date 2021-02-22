@@ -8,7 +8,6 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
-        .package(url: "https://github.com/vapor/queues-redis-driver.git", from: "1.0.0-rc.3"),
         .package(url: "https://github.com/SwiftDocOrg/Git.git", .revision("f3b37c3ccf0a1559d4097e2eeb883801c4b8f510")),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", .upToNextMinor(from: "0.9.0")),
         .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMinor(from: "0.3.1")),
@@ -39,7 +38,6 @@ let package = Package(
             name: "Server",
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
-                .product(name: "QueuesRedisDriver", package: "queues-redis-driver"),
                 .product(name: "AnyCodable", package: "AnyCodable"),
                 .target(name: "PackageRegistry")
             ],

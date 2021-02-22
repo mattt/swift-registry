@@ -62,9 +62,10 @@ open class EndpointTestCase: XCTestCase {
             return archive.data!
         }
 
-        try registry.publish(version: "1.0.0", of: "github.com/mona/LinkedList")
-        try registry.publish(version: "1.1.0", of: "github.com/mona/LinkedList")
-        try registry.publish(version: "1.1.1", of: "github.com/mona/LinkedList")
+        let package = Package("@mona/LinkedList")!
+        try registry.publish(version: "1.0.0", of: package)
+        try registry.publish(version: "1.1.0", of: package)
+        try registry.publish(version: "1.1.1", of: package)
 
         try configure(app, with: registry)
 

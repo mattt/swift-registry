@@ -7,13 +7,19 @@ extension Git {
         let tmp = try temporaryDirectory().appendingPathComponent("\(release.package.name)-\(release.version)")
         defer { try? fileManager.removeItem(at: tmp) }
 
-        let repository = try Repository.clone(from: release.package.url, to: tmp)
+        let owner = release.package.scope.dropFirst()
+        let project = release.package.name
+        guard let url = URL(string: "https://github.com/\(owner)/\(project)") else {
+            throw Error("invalid url for package: \(release)")
+        }
+
+        let repository = try Repository.clone(from: url, to: tmp)
 
         let tagNames = try repository.tagNames(matching: "*\(release.version)")
         guard let reference = tagNames.first(where: { $0 == "\(release.version)" ||
                                                       $0 == "v\(release.version)"})
         else {
-            fatalError("unknown tag: [v]\(release.version)")
+            throw Error("unknown tag: [v]\(release.version)")
         }
 
         fileManager.changeCurrentDirectoryPath(tmp.path)

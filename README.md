@@ -39,9 +39,8 @@ will be created at the specified path if one doesn't already exist there.
 You can interact with the registry using `curl` or your REST client of choice.
 
 ```terminal
-$ curl -X PUT \
-    -H "Accept: application/vnd.swift.registry.v1+json" \
-    "http://localhost:8080/github.com/Alamofire/Alamofire/5.0.0"
+$ curl -H "Accept: application/vnd.swift.registry.v1+json" \
+       "http://localhost:8080/@Alamofire/Alamofire"
 ```
 
 ### Command Line Interface
@@ -62,11 +61,11 @@ SUBCOMMANDS:
   See 'registry-command help <subcommand>' for detailed help.
 
 $ swift run registry init --index path/to/index
-$ swift run registry publish github.com/Jounce/Surge 2.3.0 --index path/to/index
-$ swift run registry publish github.com/Flight-School/Money 1.2.0 --index path/to/index
+$ swift run registry publish @Jounce/Surge 2.3.0 --index path/to/index
+$ swift run registry publish @Flight-School/Money 1.2.0 --index path/to/index
 $ swift run registry list --index path/to/index
-github.com/Flight-School/Money - 1.2.0
-github.com/Jounce/Surge - 2.3.0
+@flight-school/Money - 1.2.0
+@jounce/Surge - 2.3.0
 ```
 
 [ci badge]: https://github.com/mattt/swift-registry/workflows/CI/badge.svg
