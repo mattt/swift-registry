@@ -23,7 +23,7 @@ extension RegistryCommand {
             defer { app.shutdown() }
 
             let url = URL(fileURLWithPath: options.indexPath)
-            let registry = try (try? Registry.open(at: url)) ?? (try Registry.create(at: url))
+            let registry = try Registry.open(at: url)
 
             try configure(app, with: registry)
             try app.run()

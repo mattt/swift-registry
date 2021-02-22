@@ -4,7 +4,7 @@ import Foundation
 extension Git {
     public static let archive: Registry.Archiver = { release in
         let fileManager = FileManager()
-        let tmp = temporaryURL()
+        let tmp = try temporaryDirectory().appendingPathComponent("\(release.package.name)-\(release.version)")
         defer { try? fileManager.removeItem(at: tmp) }
 
         let owner = release.package.scope.dropFirst()

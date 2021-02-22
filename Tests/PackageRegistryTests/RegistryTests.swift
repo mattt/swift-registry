@@ -5,10 +5,13 @@ import AnyCodable
 
 final class RegistryTests: XCTestCase {
     func testCreateAndPublish() throws {
-        let url = temporaryURL()
-        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-
-        let registry = try Registry.create(at: url)
+        let url = try temporaryDirectory()
+        
+        let configuration: [String: String] = [
+            "user.name": "Swift Package Registry",
+            "user.email": "noreply@swift.org"
+        ]
+        let registry = try Registry.create(at: url, with: configuration)
 
         let package = Package("@SwiftDocOrg/Markup")!
         let release = try registry.publish(version: "0.0.2", of: package)

@@ -1,12 +1,14 @@
 # Swift Package Registry - Reference Implementation
 
+![CI][ci badge]
+
 This is a reference implementation for a package registry service,
 as described in [this proposal](https://github.com/apple/swift-evolution/pull/1179).
 
 ## Requirements
 
 - macOS 10.14+
-- Swift 5.2+ (_install the latest version of Xcode_)
+- Swift 5.3+ (_install the latest version of Xcode_)
 - [Homebrew](https://brew.sh)
 - Docker* (_optional_)
 
@@ -65,3 +67,5 @@ $ swift run registry list --index path/to/index
 @flight-school/Money - 1.2.0
 @jounce/Surge - 2.3.0
 ```
+
+[ci badge]: https://github.com/mattt/swift-registry/workflows/CI/badge.svg

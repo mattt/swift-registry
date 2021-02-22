@@ -32,7 +32,7 @@ public final class Registry {
         try shell(Git.LFS.tool, with: ["install"])
 
         for (name, value) in configuration {
-            try shell(Git.tool, with: ["config", "add", name, value])
+            try shell(Git.tool, with: ["config", "--local", "--add", name, value])
         }
 
         let attributes = #"""
