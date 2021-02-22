@@ -34,8 +34,6 @@ struct EndpointsMiddleware: Middleware {
             } else {
                 endpoint = FetchReleaseMetadataEndpoint(registry: registry, release: release)
             }
-        case let (.PUT, package?, version?):
-            endpoint = PublishReleaseEndpoint(registry: registry, package: package, version: version)
         default:
             return next.respond(to: request)
         }

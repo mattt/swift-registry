@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/vapor/async-kit.git",
         "state": {
           "branch": null,
-          "revision": "7457413e57dbfac762b32dd30c1caf2c55a02a3d",
-          "version": "1.2.0"
+          "revision": "5760c79afb8ebc24fd3251fdd9724af225fdf1f9",
+          "version": "1.3.0"
         }
       },
       {
@@ -53,42 +53,6 @@
           "branch": null,
           "revision": "73706f1883f2ba950d41f18aec7e3a53766d4a6d",
           "version": "4.0.0"
-        }
-      },
-      {
-        "package": "queues",
-        "repositoryURL": "https://github.com/vapor/queues.git",
-        "state": {
-          "branch": null,
-          "revision": "649737c904b20d14bfbfaf35e38a3a106ddf75e3",
-          "version": "1.4.0"
-        }
-      },
-      {
-        "package": "queues-redis-driver",
-        "repositoryURL": "https://github.com/vapor/queues-redis-driver.git",
-        "state": {
-          "branch": null,
-          "revision": "04306b81ef25b3bc42d9634c7c657b3eb498ed0e",
-          "version": "1.0.0"
-        }
-      },
-      {
-        "package": "redis-kit",
-        "repositoryURL": "https://github.com/vapor/redis-kit.git",
-        "state": {
-          "branch": null,
-          "revision": "8037b6f66aec6a3bfbd13c7e881a80b3ac9e4f15",
-          "version": "4.2.0"
-        }
-      },
-      {
-        "package": "RediStack",
-        "repositoryURL": "https://gitlab.com/mordil/RediStack.git",
-        "state": {
-          "branch": null,
-          "revision": "8b75ef7f0e3cb82c69f2e2b47ea8f49e7d4e2ca9",
-          "version": "1.0.0-alpha.10"
         }
       },
       {
@@ -141,8 +105,8 @@
         "repositoryURL": "https://github.com/apple/swift-metrics.git",
         "state": {
           "branch": null,
-          "revision": "708b960b4605abb20bc55d65abf6bad607252200",
-          "version": "2.0.0"
+          "revision": "e382458581b05839a571c578e90060fff499f101",
+          "version": "2.1.1"
         }
       },
       {
@@ -204,8 +168,8 @@
         "repositoryURL": "https://github.com/vapor/websocket-kit.git",
         "state": {
           "branch": null,
-          "revision": "b0736014be634475dac4c23843811257d86dcdc1",
-          "version": "2.1.1"
+          "revision": "2b06a70dfcfa76a2e5079f60e3ae911511f09db0",
+          "version": "2.1.2"
         }
       },
       {
