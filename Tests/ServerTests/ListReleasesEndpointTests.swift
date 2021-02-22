@@ -13,7 +13,7 @@ final class ListReleasesEndpointTests: EndpointTestCase {
          and MAY append the `.json` extension to the requested URI.
 
          ```http
-         GET /github.com/mona/LinkedList HTTP/1.1
+         GET /@mona/LinkedList HTTP/1.1
          Host: packages.example.com
          Accept: application/vnd.swift.registry.v1+json
          ```
@@ -25,17 +25,17 @@ final class ListReleasesEndpointTests: EndpointTestCase {
          HTTP/1.1 200 OK
          Content-Type: application/json
          Content-Version: 1
-         Link: <https://github.com/mona/LinkedList>; rel="canonical",
-               <https://packages.example.com/github.com/mona/LinkedList/1.1.1>; rel="latest-version",
+         Link: <https://@mona/LinkedList>; rel="canonical",
+               <https://packages.example.com/@mona/LinkedList/1.1.1>; rel="latest-version",
                <https://github.com/sponsors/mona>; rel="payment"
 
          {
             "releases": {
                 "1.1.1": {
-                    "url": "https://packages.example.com/github.com/mona/LinkedList/1.1.1"
+                    "url": "https://packages.example.com/@mona/LinkedList/1.1.1"
                 },
                 "1.1.0": {
-                    "url": "https://packages.example.com/github.com/mona/LinkedList/1.1.0",
+                    "url": "https://packages.example.com/@mona/LinkedList/1.1.0",
                     "problem": {
                         "status": 410,
                         "title": "Gone",
@@ -43,13 +43,13 @@ final class ListReleasesEndpointTests: EndpointTestCase {
                     }
                 },
                 "1.0.0": {
-                    "url": "https://packages.example.com/github.com/mona/LinkedList/1.0.0"
+                    "url": "https://packages.example.com/@mona/LinkedList/1.0.0"
                 }
             }
          }
          ```
          */
-        try app.test(.GET, "github.com/mona/LinkedList",
+        try app.test(.GET, "@mona/LinkedList",
                      headers: ["Accept": "application/vnd.swift.registry.v1+json"],
                      afterResponse: { response in
                         /*
@@ -81,7 +81,7 @@ final class ListReleasesEndpointTests: EndpointTestCase {
                         XCTAssertNotNil(payload)
                         XCTAssertNotNil(payload?["releases"])
                         XCTAssertNotNil(payload?["releases"]?["1.1.1"])
-                        XCTAssertEqual(payload?["releases"]?["1.1.1"]?["url"]?.hasSuffix("github.com/mona/linkedlist/1.1.1"), true)
+                        XCTAssertEqual(payload?["releases"]?["1.1.1"]?["url"]?.hasSuffix("@mona/linkedlist/1.1.1"), true)
                      })
     }
 
@@ -90,7 +90,7 @@ final class ListReleasesEndpointTests: EndpointTestCase {
         If no package is found for the requested URI,
         a server SHOULD respond with a status code of `404` (NOT FOUND).
         */
-        try app.test(.GET, "github.com/mona/UnlinkedList",
+        try app.test(.GET, "@mona/UnlinkedList",
                      headers: ["Accept": "application/vnd.swift.registry.v1+json"],
                      afterResponse: { response in
                         XCTAssertEqual(response.status, .notFound)

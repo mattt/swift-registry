@@ -13,12 +13,12 @@ final class DownloadReleaseSourceArchiveEndpointTests: EndpointTestCase {
          and SHOULD append the `.zip` extension to the requested URI.
 
          ```http
-         GET /github.com/mona/LinkedList/1.1.1.zip HTTP/1.1
+         GET /@mona/LinkedList/1.1.1.zip HTTP/1.1
          Host: packages.example.com
          Accept: application/vnd.swift.registry.v1
          ```
          */
-        try app.test(.GET, "github.com/mona/LinkedList/1.1.1.zip",
+        try app.test(.GET, "@mona/LinkedList/1.1.1.zip",
                      headers: ["Accept": "\(Registry.v1 + "zip")"],
                      afterResponse: { response in
                         /*
